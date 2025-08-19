@@ -2,7 +2,7 @@ package com.example.demo.Services;
 
 import com.example.demo.Services.dto.TaskDto;
 import com.example.demo.entities.Task;
-import com.example.demo.entities.TaskStatus;
+
 import com.example.demo.entities.User;
 import com.example.demo.repositories.TaskRepository;
 import com.example.demo.repositories.UsersRepository;
@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+
 
 @Service
 public class TaskService {
@@ -27,12 +28,9 @@ public class TaskService {
 
 
     public List<Task> getUsersTasks(Long userId) {
+
         return taskRepository.findByUserId(userId);
     }
-
-
-
-
 
     public Object addNewTask(Long id , TaskDto taskDto ) {
         User user = usersRepository.findById(id)
@@ -47,13 +45,31 @@ public class TaskService {
                 taskDto.getDueDate(),
                 user
         );
-
-
-        Object savedTask = taskRepository.save(task);
-return  savedTask;
+        Object savedTask;
+        savedTask = taskRepository.save(task);
+        return  savedTask;
     }
+
     public boolean deleteTask(Long id  ) {
           taskRepository.deleteById(id);
           return  true;
+    }
+    public Task editTask(Long id , TaskDto newTask){
+        Task  oldTask=taskRepository.findById(id).get();
+
+        if (Objects.nonNull(newTask.getTitle()) && !"".equalsIgnoreCase(newTask.getTitle())) {
+            oldTask.setTitle(newTask.getTitle());
+        }
+        if (Objects.nonNull(newTask.getDescription()) && !"".equalsIgnoreCase(newTask.getDescription())) {
+            oldTask.setDescription(newTask.getDescription());
+        }
+        if (Objects.nonNull(newTask.getStatus()) && !"".equalsIgnoreCase(String.valueOf(newTask.getStatus()))) {
+            oldTask.setStatus(newTask.getStatus());
+        }
+        if (Objects.nonNull(newTask.getDueDate()) && newTask.getDueDate() instanceof LocalDate ) {
+            oldTask.setStatus(newTask.getStatus());
+        }
+
+return taskRepository.save(oldTask);
     }
 }

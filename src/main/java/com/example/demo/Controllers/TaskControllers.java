@@ -36,4 +36,9 @@ public class TaskControllers {
                 ResponseEntity.ok("Task deleted successfully") :
                 ResponseEntity.notFound().build();
     }
+    @PutMapping("/edit/{id}")
+    public Task editTask(@PathVariable Long id, @RequestBody TaskDto task) {
+        return taskService.editTask(id, task);
+    }
+
 }
