@@ -6,27 +6,27 @@ import com.example.demo.entities.Task;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/users/{userId}/tasks")
+@RequestMapping("/users/me/tasks")
 public class TaskControllers {
     private final TaskService taskService;
-
     public TaskControllers(TaskService taskService) {
         this.taskService = taskService;
     }
 
 
     @GetMapping
-    public List<Task> getTasks(@PathVariable Long userId) {
-        return taskService.getUsersTasks(userId);
+    public List<Task> getTasks( ) {
+        return taskService.getUsersTasks( );
     }
 
 
     @PostMapping("/add")
-    public Object addNewTask(@PathVariable("userId") Long id, @RequestBody TaskDto task) {
-        return taskService.addNewTask(id, task);
+    public Object addNewTask( @RequestBody TaskDto task) {
+        return taskService.addNewTask(task);
     }
 
     @DeleteMapping("/delete/{id}")

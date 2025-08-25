@@ -15,12 +15,17 @@ public class User {
     private String password;
 
 
+
+    @Column(nullable = false)
+    private String roles = "USER";
+    // Default role
     public User() {}
 
 
-    public User(String name, String password) {
+    public User(String name, String password , String roles) {
         this.name = name;
         this.password = password;
+      this.roles = roles;
     }
 
     // Getters and setters
@@ -42,4 +47,6 @@ public class User {
     public void setPassword(String password) {
         this.password = password;
     }
+    public String getRoles() {return roles;}
+    public void setRoles(String roles) {this.roles = roles;}
 }
