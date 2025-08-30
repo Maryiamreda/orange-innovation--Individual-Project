@@ -24,8 +24,5 @@ public class SmokeTest {
         assertThat(userController).isNotNull();
         assertThat(taskControllers).isNotNull();
         assertThat(authController).isNotNull();
-
     }
-
-
 }
