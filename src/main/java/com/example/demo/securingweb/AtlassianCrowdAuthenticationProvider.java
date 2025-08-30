@@ -16,8 +16,9 @@ import org.springframework.stereotype.Component;
 
 
 
-@Component
+//@Component
 public class AtlassianCrowdAuthenticationProvider implements AuthenticationProvider {
+
 
 
     private final UserService userService;

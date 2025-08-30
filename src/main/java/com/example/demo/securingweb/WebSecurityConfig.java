@@ -3,6 +3,8 @@ package com.example.demo.securingweb;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -23,7 +26,11 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig {
+    private final JwtFilter jwtFilter;
 
+    public WebSecurityConfig(JwtFilter jwtFilter ) {
+        this.jwtFilter = jwtFilter;
+    }
  //Extends WebSecurityConfigurer, which basically offers you a configuration DSL/methods.
  // With those methods, you can specify what
  // URIs in your application to protect or what exploit protections to enable/disable.
@@ -36,13 +43,16 @@ public class WebSecurityConfig {
                                 .anyRequest().authenticated() // method will internally call loadUserByUsername() method .
                         // Then it will match the password from userDetailsService with the password found from LoginRequest.
                 )
-                .logout(LogoutConfigurer::permitAll)
-
-
-                .formLogin(form -> form
-                        .defaultSuccessUrl("/users/me/tasks", true) // change path if needed
-                        .permitAll()
-                );
+                .addFilterBefore(
+                        jwtFilter
+                        , UsernamePasswordAuthenticationFilter.class);
+//                .logout(LogoutConfigurer::permitAll)
+//
+//
+//                .formLogin(form -> form
+//                        .defaultSuccessUrl("/users/me/tasks", true) // change path if needed
+//                        .permitAll()
+//                );
 
 
         return http.build();
@@ -65,5 +75,8 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
+    }
 }

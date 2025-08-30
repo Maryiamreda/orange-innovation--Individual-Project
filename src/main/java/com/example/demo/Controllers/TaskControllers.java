@@ -3,6 +3,8 @@ package com.example.demo.Controllers;
 import com.example.demo.Services.TaskService;
 import com.example.demo.Services.dto.TaskDto;
 import com.example.demo.entities.Task;
+import com.example.demo.entities.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +19,21 @@ public class TaskControllers {
         this.taskService = taskService;
     }
 
-
-    @GetMapping
-    public List<Task> getTasks( ) {
-        return taskService.getUsersTasks( );
+    @GetMapping("/check-auth")
+    public ResponseEntity<Boolean> checkAuth() {
+        try {
+            taskService.getAuth();
+            return ResponseEntity.ok(true);
+        } catch (Exception e) {
+            return ResponseEntity.ok(false);
+        }
     }
 
+
+    @GetMapping
+    public ResponseEntity<List<Task>> getMyTasks() {
+        return ResponseEntity.ok(taskService.getUsersTasks());
+    }
 
     @PostMapping("/add")
     public Object addNewTask( @RequestBody TaskDto task) {

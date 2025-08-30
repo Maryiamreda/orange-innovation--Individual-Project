@@ -2,7 +2,6 @@ package com.example.demo.Services;
 
 import com.example.demo.Services.dto.TaskDto;
 import com.example.demo.entities.Task;
-
 import com.example.demo.entities.User;
 import com.example.demo.repositories.TaskRepository;
 import com.example.demo.repositories.UsersRepository;
@@ -14,7 +13,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
-
 @Service
 public class TaskService {
     private final TaskRepository taskRepository;
@@ -23,33 +21,42 @@ public class TaskService {
     public TaskService(TaskRepository taskRepository, UsersRepository usersRepository) {
         this.taskRepository = taskRepository;
         this.usersRepository = usersRepository;
-
-
     }
 
-public User getAuth(){
-    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-    String username = auth.getName();
-    User currentUser= usersRepository.findByName(username);
-    if (currentUser == null) {
-        throw new org.springframework.security.authentication.BadCredentialsException("Not Authorized");
+    public User getAuth() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("Authentication object: " + auth);
 
+        if (auth == null || !auth.isAuthenticated()) {
+            System.out.println("Authentication is null or not authenticated");
+            throw new org.springframework.security.authentication.BadCredentialsException("Not Authorized");
+        }
+
+        String username = auth.getName();
+        System.out.println("Extracted username: " + username);
+
+        User currentUser = usersRepository.findByName(username);
+        if (currentUser == null) {
+            System.out.println("User not found in database: " + username);
+            throw new org.springframework.security.authentication.BadCredentialsException("User not found");
+        }
+
+        System.out.println("Found user: " + currentUser.getName());
+        return currentUser;
     }
-    return  currentUser;
-}
 
     public List<Task> getUsersTasks() {
         User currentUser = getAuth();
         return taskRepository.findByUserId(currentUser.getId());
     }
 
-    public Object addNewTask( TaskDto taskDto ) {
+    public Object addNewTask(TaskDto taskDto) {
         User currentUser = getAuth();
         if (currentUser == null) {
             throw new RuntimeException("User not found");
         }
-        if(taskDto.getDueDate().isBefore(LocalDate.now())){
-             throw new RuntimeException("Due date cannot be in the past");
+        if (taskDto.getDueDate().isBefore(LocalDate.now())) {
+            throw new RuntimeException("Due date cannot be in the past");
         }
         Task task = new Task(
                 taskDto.getTitle(),
@@ -59,8 +66,8 @@ public User getAuth(){
                 currentUser
         );
         return taskRepository.save(task);
-
     }
+
     public boolean deleteTask(Long id) {
         User currentUser = getAuth();
         Task task = taskRepository.findById(id)
@@ -68,11 +75,11 @@ public User getAuth(){
         if (!task.getUser().getId().equals(currentUser.getId())) {
             throw new org.springframework.security.access.AccessDeniedException("You cannot delete this task");
         }
-          taskRepository.deleteById(id);
-          return  true;
+        taskRepository.deleteById(id);
+        return true;
     }
 
-    public Task editTask(Long id , TaskDto newTask){
+    public Task editTask(Long id, TaskDto newTask) {
         User currentUser = getAuth();
 
         if (currentUser == null) {
@@ -85,6 +92,7 @@ public User getAuth(){
         if (!oldTask.getUser().getId().equals(currentUser.getId())) {
             throw new org.springframework.security.access.AccessDeniedException("You cannot edit this task");
         }
+
         if (Objects.nonNull(newTask.getTitle()) && !"".equalsIgnoreCase(newTask.getTitle())) {
             oldTask.setTitle(newTask.getTitle());
         }
@@ -94,11 +102,10 @@ public User getAuth(){
         if (Objects.nonNull(newTask.getStatus()) && !"".equalsIgnoreCase(String.valueOf(newTask.getStatus()))) {
             oldTask.setStatus(newTask.getStatus());
         }
-        if (Objects.nonNull(newTask.getDueDate()) && newTask.getDueDate() instanceof LocalDate ) {
+        if (Objects.nonNull(newTask.getDueDate()) && newTask.getDueDate() instanceof LocalDate) {
             oldTask.setDueDate(newTask.getDueDate());
         }
 
-return taskRepository.save(oldTask);
+        return taskRepository.save(oldTask);
     }
-
 }

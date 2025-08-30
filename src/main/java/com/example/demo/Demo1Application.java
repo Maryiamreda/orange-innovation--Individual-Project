@@ -22,7 +22,7 @@ public class Demo1Application {
     }
     @Bean
     public CommandLineRunner demo(
-            UsersRepository usersRepository,
+            UsersRepository usersRepository   ,
             TaskRepository taskRepository
 
     ) {
