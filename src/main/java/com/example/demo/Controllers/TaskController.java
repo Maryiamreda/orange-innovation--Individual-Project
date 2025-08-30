@@ -3,19 +3,16 @@ package com.example.demo.Controllers;
 import com.example.demo.Services.TaskService;
 import com.example.demo.Services.dto.TaskDto;
 import com.example.demo.entities.Task;
-import com.example.demo.entities.User;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users/me/tasks")
-public class TaskControllers {
+public class TaskController {
     private final TaskService taskService;
-    public TaskControllers(TaskService taskService) {
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
     }
 
@@ -32,11 +29,13 @@ public class TaskControllers {
 
     @GetMapping
     public ResponseEntity<List<Task>> getMyTasks() {
+
         return ResponseEntity.ok(taskService.getUsersTasks());
     }
 
     @PostMapping("/add")
     public Object addNewTask( @RequestBody TaskDto task) {
+
         return taskService.addNewTask(task);
     }
 
@@ -49,6 +48,7 @@ public class TaskControllers {
     }
     @PutMapping("/edit/{id}")
     public Task editTask(@PathVariable Long id, @RequestBody TaskDto task) {
+
         return taskService.editTask(id, task);
     }
 

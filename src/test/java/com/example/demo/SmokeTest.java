@@ -2,7 +2,7 @@ package com.example.demo;
 
 
 import com.example.demo.Controllers.AuthController;
-import com.example.demo.Controllers.TaskControllers;
+import com.example.demo.Controllers.TaskController;
 import com.example.demo.Controllers.UserController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ public class SmokeTest {
     @Autowired
     private UserController userController;
     @Autowired
-    private TaskControllers taskControllers;
+    private TaskController taskControllers;
     @Autowired
     private AuthController authController;
     @Test
